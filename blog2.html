@@ -268,6 +268,8 @@ col = 2*t0 + (vid % 2) + 8*(vid / 4)</code></pre>
 
 <h2>The hybrid path</h2>
 
+<p>Correct, finally. But correct isn't fast.</p>
+
 <p>The 64&times;128 tile gave correct output but was 2-4% slower end-to-end than baseline. Smaller tiles mean more thread blocks, more scheduling overhead, and less work per thread block to amortize the mainloop's pipeline setup.</p>
 
 <p>We stepped back and asked whether we needed to touch the GEMM at all.</p>
