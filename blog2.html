@@ -339,7 +339,7 @@ col = 2*t0 + (vid % 2) + 8*(vid / 4)</code></pre>
 
 <h2>What's next</h2>
 
-<p>On H100, the fused path requires a small requant kernel to convert block-quantized FP8 scales to the per-row format vLLM's downstream GEMM expects. It's still much faster than the silu+quant kernel it replaces, since it only moves FP8 data (half the bytes) and does no compute. On Blackwell (B200/SM100), this limitation disappears entirely. Native per-block dequantization in the GEMM mainloop means the next kernel can consume block-quantized FP8 directly from the epilogue. No requant kernel, and FP8 stays on-chip end to end, cutting HBM traffic even further.</p>
+<p>On H100, the fused path requires a small requant kernel to convert block-quantized FP8 scales to the per-row format vLLM's downstream GEMM expects. It's still much faster than the silu+quant kernel it replaces, since it only moves FP8 data (half the bytes) and does no compute. On Blackwell (B200/SM100), this limitation disappears entirely. Native per-block dequantization in the GEMM mainloop means the next kernel can consume block-quantized FP8 directly from the epilogue. No requant kernel, and FP8 stays on-chip end to end, cutting HBM traffic even further. On Blackwell, the fused path becomes strictly better than hybrid, no requant kernel, no regressions, no reason not to use it.</p>
 
 <p>And the SwiGLU fusion is just one of four opportunities. Three other GEMMs in the transformer have the same pattern: RMSNorm+quant after down_proj, RoPE+quant after QKV, and the attention output projection. Each has post-processing that currently runs as a separate kernel. All three have simpler post-ops than SwiGLU, none require pairing accumulator registers across a GMMA tile.</p>
 
