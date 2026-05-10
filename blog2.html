@@ -75,6 +75,8 @@ td:first-child, th:first-child { text-align: left; }
 </tbody>
 </table>
 
+<p>The activation kernel, 36 launches per forward pass, ~430MB of HBM traffic per inference, effectively disappears. On a 1000-GPU serving cluster, 1% throughput is 10 GPUs worth of free capacity.</p>
+
 <p>In Part 1 we identified the waste, a memory round-trip that shouldn't exist. This post is about eliminating it. We wrote the initial fused kernel by hand, built a benchmark harness that could tell us in 90 seconds whether a change helped or hurt, then handed the loop to an AI coding agent. In over 40 hours it ran 200+ compile-benchmark cycles, explored 15+ kernel variants, and produced ~125 commits. Most of the engineering was getting the idea to survive contact with the hardware.</p>
 
 <p>We put it in the project report as future work. But we could not resist coming back to it.<br>When we did, the first thing we realized was that the idea will never work in practice, at least not as stated. The problem is in how GPUs structure matrix multiplies.</p>
@@ -305,6 +307,8 @@ col = 2*t0 + (vid % 2) + 8*(vid / 4)</code></pre>
 <tr><td>Fused</td><td>+1.0%</td><td>+3.8%</td><td>-0.4%</td><td>2/16</td></tr>
 </tbody>
 </table>
+
+<p>The activation kernel, 36 launches per forward pass, ~430MB of HBM traffic per inference, effectively disappears. On a 1000-GPU serving cluster, 1% throughput is 10 GPUs worth of free capacity.</p>
 
 <table>
 <thead><tr><th>Config</th><th>Baseline</th><th>Hybrid</th><th>Fused</th><th>Hybrid &times;</th><th>Fused &times;</th></tr></thead>
